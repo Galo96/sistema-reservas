@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import adminService from '../services/adminService';
+import ModalEditarReserva from '../components/ModalEditarReserva';
 
 const AdminPanel = () => {
   const [reservas, setReservas] = useState([]);
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   const cargarReservas = async () => {
     const token = localStorage.getItem('token');
@@ -32,6 +35,19 @@ const AdminPanel = () => {
     }
   };
 
+  const handleGuardarEdicion = async (data) => {
+    const token = localStorage.getItem('token');
+    try {
+      await adminService.editarReserva(reservaSeleccionada.id, data, token);
+      setMostrarModal(false);
+      cargarReservas();
+      alert('Reserva actualizada correctamente.');
+    } catch (err) {
+      alert('Error al actualizar la reserva.');
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     cargarReservas();
   }, []);
@@ -44,6 +60,13 @@ const AdminPanel = () => {
         <label>Desde: <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} /></label>
         <label>Hasta: <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} /></label>
         <button onClick={cargarReservas}>Buscar</button>
+        <button onClick={() => {
+          setFechaInicio('');
+          setFechaFin('');
+          cargarReservas();
+        }} style={{ marginLeft: '10px', backgroundColor: '#6c757d', color: '#fff' }}>
+          Limpiar filtros
+        </button>
       </div>
 
       {reservas.length === 0 ? (
@@ -58,12 +81,22 @@ const AdminPanel = () => {
             <p><strong>Actividad:</strong> {r.actividad}</p>
             <p><strong>Equipo:</strong> {r.equipo}</p>
             <div style={styles.botones}>
-              <button onClick={() => console.log('Editar reserva', r.id)}>✏️ Editar</button>
+              <button onClick={() => {
+                setReservaSeleccionada(r);
+                setMostrarModal(true);
+              }}>✏️ Editar</button>
               <button onClick={() => handleEliminar(r.id)} style={{ backgroundColor: '#dc3545' }}>🗑 Eliminar</button>
             </div>
           </div>
         ))
       )}
+
+      <ModalEditarReserva
+        reserva={reservaSeleccionada}
+        isOpen={mostrarModal}
+        onClose={() => setMostrarModal(false)}
+        onSave={handleGuardarEdicion}
+      />
     </div>
   );
 };
@@ -80,20 +113,20 @@ const styles = {
   filtros: {
     display: 'flex',
     gap: '10px',
-    marginBottom: '20px',
-    flexWrap: 'wrap'
+    marginBottom: '20px'
   },
   card: {
-    backgroundColor: '#fff',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
     padding: '15px',
     marginBottom: '15px',
-    borderRadius: '8px',
+    backgroundColor: '#fff',
     boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
   },
   botones: {
-    marginTop: '10px',
     display: 'flex',
-    gap: '10px'
+    gap: '10px',
+    marginTop: '10px'
   }
 };
 

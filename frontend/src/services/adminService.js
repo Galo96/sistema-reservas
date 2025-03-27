@@ -25,8 +25,16 @@ const actualizarReserva = async (id, data, token) => {
   return res.data;
 };
 
+const editarReserva = async (id, data, token) => {
+  const res = await axios.put(`/api/admin/reservas/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data;
+};
+
 export default {
   obtenerReservas,
   eliminarReserva,
-  actualizarReserva
+  actualizarReserva,
+  editarReserva
 };

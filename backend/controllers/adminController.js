@@ -2,6 +2,8 @@
 const { Reserva } = require('../models/associations');
 const { Op } = require('sequelize');
 
+
+
 exports.getAllReservas = async (req, res) => {
   try {
     const reservas = await Reserva.findAll({

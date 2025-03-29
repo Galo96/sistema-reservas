@@ -1,16 +1,28 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendario from '../components/Calendario';
 import FormReserva from '../components/FormReserva';
 import reservaService from '../services/reservaService';
 import Modal from '../components/Modal';
 import HistorialReservas from '../components/HistorialReservas';
+import { jwtDecode } from 'jwt-decode';
+
 
 const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [reservaData, setReservaData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const historialRef = useRef(null);
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded = jwtDecode(token);
+      setUsername(decoded.username);
+    }
+  }, []);
+
   const navigate = useNavigate();
   const rol = localStorage.getItem('rol');
 
@@ -56,7 +68,7 @@ const Dashboard = () => {
   return (
     <div style={styles.container}>
       <h1>Dashboard</h1>
-      <p>Bienvenido al sistema de reservas.</p>
+      <p style={styles.subtitulo}>Bienvenido al sistema de reservas. <strong>{username}</strong> 👋</p>
 
       {rol === 'admin' && (
         <div style={{ marginTop: '10px' }}>
@@ -99,31 +111,34 @@ const Dashboard = () => {
 
 const styles = {
   container: {
-    textAlign: 'center',
-    marginTop: '30px',
+    maxWidth: '1200px',
+    margin: '40px auto',
     padding: '0 20px',
+    fontFamily: 'Arial, sans-serif'
+  },
+  subtitulo: {
+    fontSize: '1.2rem',
+    color: '#555',
+    marginBottom: '20px'
   },
   calendarioWrapper: {
     display: 'flex',
     justifyContent: 'center',
-    marginBottom: '20px',
+    marginBottom: '30px',
     flexWrap: 'wrap',
-    gap: '20px',
+    gap: '30px',
   },
   card: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#ffffff',
     padding: '20px',
     borderRadius: '12px',
-    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '420px',
   },
   resumen: {
     textAlign: 'left',
     padding: '10px',
-    border: 'none',
-    outline: 'none',
-    margin: 0,
   },
   botonAdmin: {
     marginTop: '10px',

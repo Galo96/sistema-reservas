@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import authService from '../services/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
+import useAuthStatus from '../hooks/useAuthStatus'; // ✅ nuevo hook
 
 const Register = () => {
   const navigate = useNavigate();
+  const { expired } = useAuthStatus(); // ✅ detectamos si ya está logueado
   const [form, setForm] = useState({
     username: '',
     password: '',
     role: 'user'
   });
+
+  // ✅ Si ya está logueado, redirigimos automáticamente
+  if (!expired) {
+    return <Navigate to="/dashboard" />;
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

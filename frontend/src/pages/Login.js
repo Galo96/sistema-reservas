@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import authService from '../services/authService';
+import useAuthStatus from '../hooks/useAuthStatus';
 
 const Login = () => {
-  // 'login' o 'register' determina el modo del formulario
   const [mode, setMode] = useState('login');
   const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [redirectToDashboard, setRedirectToDashboard] = useState(false);
   const navigate = useNavigate();
+  const { expired } = useAuthStatus();
+
+  // ✅ Redirige tras login exitoso
+  useEffect(() => {
+    if (redirectToDashboard) {
+      navigate('/dashboard');
+    }
+  }, [redirectToDashboard, navigate]);
+
+  // ✅ Si ya está logueado, no mostramos el login
+  if (!expired) {
+    return <Navigate to="/dashboard" />;
+  }
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -20,25 +34,17 @@ const Login = () => {
     e.preventDefault();
     try {
       if (mode === 'login') {
-        // Llamada al servicio de login
         const tokenData = await authService.login(credentials);
-  
+
         if (!tokenData || !tokenData.token) {
           alert('Error de autenticación');
           return;
         }
-  
-        // Limpiar cualquier valor previo
-        localStorage.removeItem('token');
-        localStorage.removeItem('rol');
-  
-        // ✅ Guardar token y rol correctamente
-        localStorage.setItem('token', tokenData.token); // JWT válido
-        localStorage.setItem('rol', tokenData.role);    // "admin" o "user"
-  
-        navigate('/dashboard');
+
+        localStorage.setItem('token', tokenData.token);
+        localStorage.setItem('rol', tokenData.role);
+        setRedirectToDashboard(true);
       } else {
-        // Llamada al servicio de registro
         await authService.register(credentials);
         alert('Registro exitoso. Por favor, inicia sesión.');
         setMode('login');
@@ -47,6 +53,8 @@ const Login = () => {
       alert(error.response?.data?.error || 'Ocurrió un error');
     }
   };
+
+  // ...imports y lógica previa igual...
 
   return (
     <div style={styles.container}>
@@ -74,15 +82,19 @@ const Login = () => {
           {mode === 'login' ? 'Ingresar' : 'Registrarse'}
         </button>
       </form>
+
+      {/* 🔴 Botón de alternar entre login/registro comentado */}
+      {/*
       <button onClick={toggleMode} style={styles.toggleButton}>
         {mode === 'login'
           ? '¿No tienes una cuenta? Regístrate'
           : '¿Ya tienes cuenta? Inicia sesión'}
       </button>
+      */}
 
       <p>
-  ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
-</p>
+        ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+      </p>
     </div>
   );
 };

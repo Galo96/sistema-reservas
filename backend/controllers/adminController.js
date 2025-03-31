@@ -17,20 +17,36 @@ exports.getAllReservas = async (req, res) => {
 
 exports.filterReservas = async (req, res) => {
   const { fechaInicio, fechaFin } = req.query;
+
   try {
+    if (!fechaInicio || !fechaFin) {
+      return res.status(400).json({ error: 'Debe especificar fechaInicio y fechaFin' });
+    }
+
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+    fin.setDate(fin.getDate() + 1); // ⬅️ sumamos un día completo
+
+    console.log('⏱️ Filtro desde:', inicio.toISOString(), 'hasta:', fin.toISOString());
+
     const reservas = await Reserva.findAll({
       where: {
         fechaVisita: {
-          [Op.between]: [fechaInicio, fechaFin]
+          [Op.gte]: inicio,
+          [Op.lt]: fin // ⬅️ usamos "menor a" el día siguiente
         }
       },
-      include: ['User', 'Proyecto']
+      include: ['User', 'Proyecto'],
+      order: [['fechaVisita', 'DESC']]
     });
+
     res.json(reservas);
   } catch (error) {
+    console.error('Error al filtrar reservas:', error);
     res.status(500).json({ error: 'Error al filtrar reservas' });
   }
 };
+
 
 exports.deleteReserva = async (req, res) => {
   const { id } = req.params;

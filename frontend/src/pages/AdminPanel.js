@@ -8,6 +8,7 @@ const AdminPanel = () => {
   const [fechaFin, setFechaFin] = useState('');
   const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [limpiando, setLimpiando] = useState(false); // 🆕
 
   const cargarReservas = async () => {
     const token = localStorage.getItem('token');
@@ -52,6 +53,14 @@ const AdminPanel = () => {
     cargarReservas();
   }, []);
 
+  // 🆕 Efecto que se dispara después de limpiar filtros
+  useEffect(() => {
+    if (limpiando) {
+      cargarReservas();
+      setLimpiando(false);
+    }
+  }, [limpiando]);
+
   return (
     <div style={styles.container}>
       <h2>📋 Panel de Administración de Reservas</h2>
@@ -59,12 +68,25 @@ const AdminPanel = () => {
       <div style={styles.filtros}>
         <label>Desde: <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} /></label>
         <label>Hasta: <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} /></label>
-        <button onClick={cargarReservas}>Buscar</button>
+
         <button onClick={() => {
-          setFechaInicio('');
-          setFechaFin('');
+          if (!fechaInicio || !fechaFin) {
+            alert('Por favor selecciona ambas fechas para aplicar el filtro.');
+            return;
+          }
           cargarReservas();
-        }} style={{ marginLeft: '10px', backgroundColor: '#6c757d', color: '#fff' }}>
+        }}>
+          Buscar
+        </button>
+
+        <button
+          onClick={() => {
+            setFechaInicio('');
+            setFechaFin('');
+            setLimpiando(true); // ✅ activa efecto que recarga sin filtros
+          }}
+          style={{ marginLeft: '10px', backgroundColor: '#6c757d', color: '#fff' }}
+        >
           Limpiar filtros
         </button>
       </div>

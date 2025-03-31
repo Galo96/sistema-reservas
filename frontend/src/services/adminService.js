@@ -1,32 +1,36 @@
 import axios from 'axios';
 
-const API_URL = '/api/admin/reservas';
+const API_BASE = '/api/admin/reservas';
 
+// ✅ Obtiene todas o filtra por fechas según parámetros
 const obtenerReservas = async (token, fechaInicio, fechaFin) => {
-  const params = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : {};
-  const res = await axios.get(API_URL, {
+  const tieneFechas = fechaInicio && fechaFin;
+  const url = tieneFechas ? `${API_BASE}/filter` : API_BASE;
+
+  const res = await axios.get(url, {
     headers: { Authorization: `Bearer ${token}` },
-    params
+    params: tieneFechas ? { fechaInicio, fechaFin } : {}
   });
+
   return res.data;
 };
 
 const eliminarReserva = async (id, token) => {
-  const res = await axios.delete(`${API_URL}/${id}`, {
+  const res = await axios.delete(`${API_BASE}/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return res.data;
 };
 
 const actualizarReserva = async (id, data, token) => {
-  const res = await axios.put(`${API_URL}/${id}`, data, {
+  const res = await axios.put(`${API_BASE}/${id}`, data, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return res.data;
 };
 
 const editarReserva = async (id, data, token) => {
-  const res = await axios.put(`/api/admin/reservas/${id}`, data, {
+  const res = await axios.put(`${API_BASE}/${id}`, data, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return res.data;

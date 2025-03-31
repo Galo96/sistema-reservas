@@ -65,15 +65,19 @@ exports.updateReserva = async (req, res) => {
   try {
     const reserva = await Reserva.findByPk(id);
     if (!reserva) return res.status(404).json({ error: 'Reserva no encontrada' });
-    
-    reserva.fechaVisita = fechaVisita;
-    reserva.horaVisita = horaVisita;
-    reserva.actividad = actividad;
-    reserva.equipo = equipo;
+    if (horaVisita && !/^\d{2}:\d{2}$/.test(horaVisita)) {
+      return res.status(400).json({ error: 'Formato de hora inválido. Usa HH:mm' });
+    }
+    if (fechaVisita) reserva.fechaVisita = fechaVisita;
+    if (horaVisita) reserva.horaVisita = horaVisita;
+    if (actividad?.trim()) reserva.actividad = actividad;
+    if (equipo?.trim()) reserva.equipo = equipo;
+
     
     await reserva.save();
     res.json({ message: 'Reserva actualizada' });
   } catch (error) {
+    console.error('🔴 Error al actualizar reserva:', error); // <-- muy importante
     res.status(500).json({ error: 'Error al actualizar reserva' });
   }
 };

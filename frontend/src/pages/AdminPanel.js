@@ -47,6 +47,8 @@ const AdminPanel = () => {
       alert('Error al actualizar la reserva.');
       console.error(err);
     }
+    console.log('🚀 handleGuardarEdicion ejecutado con:', data);
+
   };
 
   useEffect(() => {

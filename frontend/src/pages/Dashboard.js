@@ -112,9 +112,10 @@ const Dashboard = () => {
 const styles = {
   container: {
     maxWidth: '1200px',
-    margin: '40px auto',
+    margin: '0 auto',
     padding: '0 20px',
-    fontFamily: 'Arial, sans-serif'
+    fontFamily: 'Arial, sans-serif',
+    textAlign: 'center'
   },
   subtitulo: {
     fontSize: '1.2rem',

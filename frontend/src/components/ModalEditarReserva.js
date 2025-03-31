@@ -10,75 +10,71 @@ const ModalEditarReserva = ({ reserva, isOpen, onClose, onSave }) => {
 
   useEffect(() => {
     if (reserva) {
+      const horaRaw = reserva.horaVisita || '';
+      const horaFormateada = horaRaw.substring(0, 5);
+
       setForm({
-        fechaVisita: reserva.fechaVisita?.slice(0, 10),
-        horaVisita: reserva.horaVisita,
-        actividad: reserva.actividad,
-        equipo: reserva.equipo
+        fechaVisita: reserva.fechaVisita?.substring(0, 10) || '',
+        horaVisita: horaFormateada,
+        actividad: reserva.actividad || '',
+        equipo: reserva.equipo || ''
       });
     }
   }, [reserva]);
-
-  if (!isOpen) return null;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = () => {
-    // ✅ VALIDACIÓN DE CAMPOS
     if (
       !form.fechaVisita ||
       !form.horaVisita ||
       !form.actividad.trim() ||
       !form.equipo.trim()
     ) {
-      alert('Todos los campos son obligatorios y no pueden estar vacíos.');
+      alert('Todos los campos son obligatorios.');
       return;
     }
 
-    onSave(form); // Enviar al componente padre
+    if (!/^\d{2}:\d{2}$/.test(form.horaVisita)) {
+      alert('La hora debe tener formato HH:mm');
+      return;
+    }
+
+    onSave(form);
   };
+
+  if (!isOpen) return null;
 
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h3>Editar Reserva</h3>
+        <h2 style={styles.title}>✏️ Editar Reserva</h2>
 
-        <label>Fecha:</label>
-        <input
-          type="date"
-          name="fechaVisita"
-          value={form.fechaVisita}
-          onChange={handleChange}
-        />
+        <div style={styles.field}>
+          <label style={styles.label}>Fecha de visita:</label>
+          <input type="date" name="fechaVisita" value={form.fechaVisita} onChange={handleChange} style={styles.input} />
+        </div>
 
-        <label>Hora:</label>
-        <input
-          type="time"
-          name="horaVisita"
-          value={form.horaVisita}
-          onChange={handleChange}
-        />
+        <div style={styles.field}>
+          <label style={styles.label}>Hora de visita:</label>
+          <input type="time" name="horaVisita" value={form.horaVisita} onChange={handleChange} style={styles.input} />
+        </div>
 
-        <label>Actividad:</label>
-        <input
-          type="text"
-          name="actividad"
-          value={form.actividad}
-          onChange={handleChange}
-        />
+        <div style={styles.field}>
+          <label style={styles.label}>Actividad:</label>
+          <input type="text" name="actividad" value={form.actividad} onChange={handleChange} style={styles.input} />
+        </div>
 
-        <label>Equipo:</label>
-        <textarea
-          name="equipo"
-          value={form.equipo}
-          onChange={handleChange}
-        />
+        <div style={styles.field}>
+          <label style={styles.label}>Equipo:</label>
+          <input type="text" name="equipo" value={form.equipo} onChange={handleChange} style={styles.input} />
+        </div>
 
-        <div style={{ marginTop: '15px' }}>
-          <button onClick={handleSubmit}>Guardar</button>
-          <button onClick={onClose} style={{ marginLeft: '10px' }}>Cancelar</button>
+        <div style={styles.botones}>
+          <button onClick={handleSubmit} style={styles.save}>Guardar</button>
+          <button onClick={onClose} style={styles.cancel}>Cancelar</button>
         </div>
       </div>
     </div>
@@ -87,17 +83,35 @@ const ModalEditarReserva = ({ reserva, isOpen, onClose, onSave }) => {
 
 const styles = {
   overlay: {
-    position: 'fixed',
-    top: 0, left: 0, width: '100vw', height: '100vh',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    display: 'flex', justifyContent: 'center', alignItems: 'center',
-    zIndex: 999
+    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center'
   },
   modal: {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '10px',
-    minWidth: '300px'
+    backgroundColor: '#fff', padding: '25px', borderRadius: '12px', width: '420px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)', fontFamily: 'Arial, sans-serif'
+  },
+  title: {
+    marginBottom: '20px', fontSize: '20px', fontWeight: 'bold'
+  },
+  field: {
+    marginBottom: '15px'
+  },
+  label: {
+    display: 'block', fontWeight: 'bold', marginBottom: '5px'
+  },
+  input: {
+    width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc'
+  },
+  botones: {
+    display: 'flex', justifyContent: 'flex-end', gap: '10px'
+  },
+  save: {
+    backgroundColor: '#007bff', color: '#fff', border: 'none', padding: '8px 16px',
+    borderRadius: '4px', cursor: 'pointer'
+  },
+  cancel: {
+    backgroundColor: '#dc3545', color: '#fff', border: 'none', padding: '8px 16px',
+    borderRadius: '4px', cursor: 'pointer'
   }
 };
 

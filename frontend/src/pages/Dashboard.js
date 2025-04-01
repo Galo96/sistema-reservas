@@ -26,8 +26,9 @@ const Dashboard = () => {
   const rol = localStorage.getItem('rol');
 
   const handleDateChange = (date) => {
-    const formatted = date.toISOString().substring(0, 10); // ✅ formato plano YYYY-MM-DD
-    setSelectedDate(formatted);
+    //const formatted = date.toISOString().substring(0, 10); // ✅ formato plano YYYY-MM-DD
+    setSelectedDate(date);
+    //setSelectedDate(formatted);
   };
 
   const handleReservaSubmit = async (formData, resetForm) => {
@@ -40,7 +41,8 @@ const Dashboard = () => {
 
       const data = {
         ...formData,
-        fechaVisita: selectedDate,
+        //fechaVisita: selectedDate,
+        fechaVisita: selectedDate.toISOString().substring(0, 10), // formato YYYY-MM-DD
       };
 
       const response = await reservaService.crearReserva(data, token);
@@ -92,7 +94,7 @@ const Dashboard = () => {
             <h3>✅ Reserva registrada</h3>
             <p><strong>Usuario:</strong> {reservaData?.usuarioNombre}</p>
             <p><strong>Proyecto:</strong> {reservaData?.proyectoNombre}</p>
-            <p><strong>Fecha:</strong> {reservaData?.fechaVisita?.split('-').reverse().join('/')}</p>
+            <p><strong>Fecha:</strong> {new Date(reservaData?.fechaVisita).toLocaleDateString()}</p>
             <p><strong>Hora:</strong> {reservaData?.horaVisita}</p>
             <p><strong>Actividad:</strong> {reservaData?.actividad}</p>
             <p><strong>Equipo:</strong> {reservaData?.equipo}</p>

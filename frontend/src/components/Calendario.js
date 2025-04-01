@@ -5,7 +5,8 @@ import 'react-calendar/dist/Calendar.css';
 
 const Calendario = ({ onDateChange }) => {
   const handleChange = (date) => {
-    onDateChange(date); // Envía la fecha seleccionada al padre (Dashboard)
+    const fechaLocal = date.toISOString().substring(0, 10);
+    onDateChange(fechaLocal); // Envía la fecha seleccionada al padre (Dashboard)
   };
 
   return (

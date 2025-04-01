@@ -46,18 +46,10 @@ exports.getReservasDelUsuario = async (req, res) => {
     const filtros = { userId };
 
     if (fechaInicio && fechaFin) {
-      const inicio = new Date(fechaInicio);
-      const fin = new Date(fechaFin);
-      fin.setDate(fin.getDate() + 1);
-    
-      console.log('🔍 Historial del usuario: desde', inicio.toISOString(), 'hasta', fin.toISOString());
-    
       filtros.fechaVisita = {
-        [Op.gte]: inicio,
-        [Op.lt]: fin
+        [Op.between]: [fechaInicio, fechaFin]
       };
     }
-    
 
     const reservas = await Reserva.findAll({
       where: filtros,
@@ -81,4 +73,5 @@ exports.getReservasDelUsuario = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener el historial' });
   }
 };
+
 

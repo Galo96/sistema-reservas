@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react';
 import adminService from '../services/adminService';
 import ModalEditarReserva from '../components/ModalEditarReserva';
 
+
+const formatearFecha = (isoString) => {
+  const fecha = isoString?.substring(0, 10);
+  return fecha?.split('-').reverse().join('/');
+};
+
 const AdminPanel = () => {
   const [reservas, setReservas] = useState([]);
   const [fechaInicio, setFechaInicio] = useState('');
@@ -100,7 +106,7 @@ const AdminPanel = () => {
           <div key={r.id} style={styles.card}>
             <p><strong>Usuario:</strong> {r.User?.username}</p>
             <p><strong>Proyecto:</strong> {r.Proyecto?.nombre}</p>
-            <p><strong>Fecha:</strong> {new Date(r.fechaVisita).toLocaleDateString()}</p>
+            <p><strong>Fecha:</strong> {formatearFecha(r.fechaVisita)}</p>
             <p><strong>Hora:</strong> {r.horaVisita}</p>
             <p><strong>Actividad:</strong> {r.actividad}</p>
             <p><strong>Equipo:</strong> {r.equipo}</p>

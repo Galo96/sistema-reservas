@@ -1,6 +1,12 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import reservaService from '../services/reservaService';
 
+
+const formatearFecha = (isoString) => {
+  const fecha = isoString?.substring(0, 10); // "2025-04-05"
+  return fecha?.split('-').reverse().join('/'); // "05/04/2025"
+};
+
 const HistorialReservas = forwardRef((props, ref) => {
   const [reservas, setReservas] = useState([]);
   const [fechaInicio, setFechaInicio] = useState('');
@@ -56,7 +62,7 @@ const HistorialReservas = forwardRef((props, ref) => {
       ) : (
         reservas.map((r) => (
           <div key={r.id} style={styles.card}>
-            <p><strong>Fecha de visita:</strong> {new Date(r.fechaVisita).toLocaleDateString()}</p>
+            <p><strong>Fecha de visita:</strong> {formatearFecha(r.fechaVisita)}</p>
             <p><strong>Hora:</strong> {r.horaVisita}</p>
             <p><strong>Proyecto:</strong> {r.proyectoNombre}</p>
             <p><strong>Actividad:</strong> {r.actividad}</p>

@@ -7,7 +7,6 @@ import Modal from '../components/Modal';
 import HistorialReservas from '../components/HistorialReservas';
 import { jwtDecode } from 'jwt-decode';
 
-
 const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [reservaData, setReservaData] = useState(null);
@@ -27,14 +26,13 @@ const Dashboard = () => {
   const rol = localStorage.getItem('rol');
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    const formatted = date.toISOString().substring(0, 10); // ✅ formato plano YYYY-MM-DD
+    setSelectedDate(formatted);
   };
 
   const handleReservaSubmit = async (formData, resetForm) => {
     try {
       const token = localStorage.getItem('token');
-      console.log('TOKEN ENCONTRADO:', token);
-
       if (!token) {
         alert('Debe iniciar sesión para hacer una reserva.');
         return;
@@ -46,8 +44,6 @@ const Dashboard = () => {
       };
 
       const response = await reservaService.crearReserva(data, token);
-      console.log('respuesta', response);
-
       alert('✅ Reserva guardada correctamente.');
       setReservaData(response.reserva);
       setShowModal(true);
@@ -96,7 +92,7 @@ const Dashboard = () => {
             <h3>✅ Reserva registrada</h3>
             <p><strong>Usuario:</strong> {reservaData?.usuarioNombre}</p>
             <p><strong>Proyecto:</strong> {reservaData?.proyectoNombre}</p>
-            <p><strong>Fecha:</strong> {new Date(reservaData?.fechaVisita).toLocaleDateString()}</p>
+            <p><strong>Fecha:</strong> {reservaData?.fechaVisita?.split('-').reverse().join('/')}</p>
             <p><strong>Hora:</strong> {reservaData?.horaVisita}</p>
             <p><strong>Actividad:</strong> {reservaData?.actividad}</p>
             <p><strong>Equipo:</strong> {reservaData?.equipo}</p>

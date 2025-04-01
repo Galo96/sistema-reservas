@@ -14,7 +14,8 @@ const ModalEditarReserva = ({ reserva, isOpen, onClose, onSave }) => {
       const horaFormateada = horaRaw.substring(0, 5);
 
       setForm({
-        fechaVisita: reserva.fechaVisita?.substring(0, 10) || '',
+
+        fechaVisita: typeof reserva.fechaVisita === 'string'? reserva.fechaVisita.substring(0, 10): '',
         horaVisita: horaFormateada,
         actividad: reserva.actividad || '',
         equipo: reserva.equipo || ''
